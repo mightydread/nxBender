@@ -240,4 +240,42 @@ class NXSession(object):
             dst = '%s/%d' % (net.network_address, net.prefixlen)
             ip.route("add", dst=dst, gateway=gateway)
 
+        self.setup_dns()
+
         logging.info("Remote routing configured, VPN is up")
+
+    def setup_dns(self):
+        if getattr(self.options, 'no_dns', False):
+            return
+
+        def clean(value):
+            return value.rstrip(';').strip().strip('"')
+
+        servers = [clean(self.srv_options[k]) for k in ('dns1', 'dns2') if k in self.srv_options]
+        servers = [s for s in servers if s and s != '0.0.0.0']
+        if not servers:
+            logging.debug('No DNS servers in srv_options; skipping resolvectl setup')
+            return
+
+        domains = []
+        if 'dnsSuffix' in self.srv_options:
+            d = clean(self.srv_options['dnsSuffix'])
+            if d:
+                domains.append(d)
+        for d in getattr(self.options, 'resolve_domain', []) or []:
+            d = d.strip()
+            if d and d not in domains:
+                domains.append(d)
+
+        iface = 'ppp0'  # nxBender currently only handles a single connection
+        try:
+            subprocess.check_call(['resolvectl', 'dns', iface] + servers)
+            if domains:
+                # `~suffix` makes it a routing-only domain: only matching names use this resolver
+                subprocess.check_call(['resolvectl', 'domain', iface] + ['~' + d for d in domains])
+            logging.info('DNS configured on %s: servers=%s domains=%s'
+                         % (iface, ','.join(servers), ','.join(domains) or '(none)'))
+        except FileNotFoundError:
+            logging.warning('resolvectl not found; skipping DNS configuration')
+        except subprocess.CalledProcessError as e:
+            logging.warning('resolvectl failed (%s); DNS not configured' % e)

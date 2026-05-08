@@ -20,6 +20,10 @@ parser.add_argument('-d', '--domain', required=True)
 parser.add_argument('-f', '--fingerprint', help='Verify server\'s SSL certificate has this fingerprint. Overrides all other certificate verification.')
 parser.add_argument('-m', '--max-line', type=int, default=1500, help='Maximum length of a single line of PPP data sent to the server')
 
+parser.add_argument('--resolve-domain', action='append', default=[],
+                    help='Additional DNS routing domain to send via the VPN (e.g. "example.com"). May be specified multiple times. The server-supplied dnsSuffix is always included.')
+parser.add_argument('--no-dns', action='store_true', help='Do not configure DNS via systemd-resolved when the tunnel comes up')
+
 parser.add_argument('--pinentry', help='Program to use to prompt for interactive responses eg. OTP codes. Specify "none" to just prompt on the terminal.')
 
 parser.add_argument('--debug', action='store_true', help='Show debugging information')
