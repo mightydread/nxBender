@@ -244,6 +244,19 @@ class NXSession(object):
             dst = '%s/%d' % (net.network_address, net.prefixlen)
             ip.route("add", dst=dst, gateway=gateway)
 
+        for extra in getattr(self.options, 'extra_route', []) or []:
+            try:
+                net = ipaddress.IPv4Network(unicode(extra.strip()))
+            except ValueError as e:
+                logging.warning('Invalid extra-route %r: %s' % (extra, e))
+                continue
+            dst = '%s/%d' % (net.network_address, net.prefixlen)
+            try:
+                ip.route('add', dst=dst, gateway=gateway)
+                logging.info('Added extra route %s via %s' % (dst, gateway))
+            except Exception as e:
+                logging.warning('Failed to add extra route %s: %s' % (dst, e))
+
         self.setup_dns()
 
         logging.info("Remote routing configured, VPN is up")

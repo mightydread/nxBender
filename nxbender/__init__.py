@@ -25,6 +25,8 @@ parser.add_argument('--resolve-domain', action='append', default=[],
 parser.add_argument('--no-dns', action='store_true', help='Do not configure DNS via systemd-resolved when the tunnel comes up')
 parser.add_argument('--split-tunnel', action='store_true',
                     help='Do not install the server-pushed default route (0.0.0.0/0). Only specific subnets pushed by the server are routed via the VPN; all other traffic uses the system default route.')
+parser.add_argument('--extra-route', action='append', default=[],
+                    help='Additional CIDR to route via the VPN beyond what the server pushes (e.g. "10.0.0.0/8"). Repeatable.')
 
 parser.add_argument('--pinentry', help='Program to use to prompt for interactive responses eg. OTP codes. Specify "none" to just prompt on the terminal.')
 
