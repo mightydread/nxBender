@@ -235,8 +235,12 @@ class NXSession(object):
             except Exception as e:
                 logging.warning('Could not pin route to VPN server %s: %s' % (server_ip, e))
 
+        split_tunnel = getattr(self.options, 'split_tunnel', False)
         for route in set(self.routes):
             net = ipaddress.IPv4Network(unicode(route))
+            if split_tunnel and net.prefixlen == 0:
+                logging.info('Split tunnel: skipping default route %s' % route)
+                continue
             dst = '%s/%d' % (net.network_address, net.prefixlen)
             ip.route("add", dst=dst, gateway=gateway)
 

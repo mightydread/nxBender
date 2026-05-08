@@ -23,6 +23,8 @@ parser.add_argument('-m', '--max-line', type=int, default=1500, help='Maximum le
 parser.add_argument('--resolve-domain', action='append', default=[],
                     help='Additional DNS routing domain to send via the VPN (e.g. "example.com"). May be specified multiple times. The server-supplied dnsSuffix is always included.')
 parser.add_argument('--no-dns', action='store_true', help='Do not configure DNS via systemd-resolved when the tunnel comes up')
+parser.add_argument('--split-tunnel', action='store_true',
+                    help='Do not install the server-pushed default route (0.0.0.0/0). Only specific subnets pushed by the server are routed via the VPN; all other traffic uses the system default route.')
 
 parser.add_argument('--pinentry', help='Program to use to prompt for interactive responses eg. OTP codes. Specify "none" to just prompt on the terminal.')
 
