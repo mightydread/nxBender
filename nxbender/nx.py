@@ -5,6 +5,7 @@ from . import ppp
 import pyroute2
 import ipaddress
 import atexit
+import socket
 import subprocess
 import sys
 
@@ -217,6 +218,22 @@ class NXSession(object):
 
     def setup_routes(self, gateway):
         ip = pyroute2.IPRoute()
+
+        # Pin a host route to the VPN server via the existing path, so the
+        # underlying SSL tunnel survives once we install a default route via ppp0.
+        server_ip = socket.gethostbyname(self.options.server)
+        existing = ip.route('get', dst=server_ip)
+        if existing:
+            attrs = dict(existing[0]['attrs'])
+            kw = {'dst': '%s/32' % server_ip}
+            if attrs.get('RTA_GATEWAY'):
+                kw['gateway'] = attrs['RTA_GATEWAY']
+            if attrs.get('RTA_OIF'):
+                kw['oif'] = attrs['RTA_OIF']
+            try:
+                ip.route('add', **kw)
+            except Exception as e:
+                logging.warning('Could not pin route to VPN server %s: %s' % (server_ip, e))
 
         for route in set(self.routes):
             net = ipaddress.IPv4Network(unicode(route))
