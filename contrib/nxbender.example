@@ -1,0 +1,11 @@
+# nxBender configuration. Place at /etc/nxbender (mode 0600, root:root)
+# or ~/.nxbender. Any long-form CLI option works here.
+
+server = vpn.example.com
+port = 4433
+username = your-username
+domain = LocalDomain
+# password = your-password    # omit to be prompted, or store here for unattended use
+
+# Extra DNS routing domains (the server-supplied dnsSuffix is always included).
+# resolve-domain = [example.com, example.internal]

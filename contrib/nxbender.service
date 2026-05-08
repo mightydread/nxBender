@@ -1,0 +1,17 @@
+[Unit]
+Description=nxBender SonicWall SSL VPN client
+Documentation=https://github.com/abrasive/nxBender
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Reads credentials from /etc/nxbender (mode 0600, root:root) by default.
+ExecStart=/usr/local/bin/nxBender
+KillSignal=SIGINT
+TimeoutStopSec=15
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

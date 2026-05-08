@@ -1,0 +1,4 @@
+# Install at /etc/sudoers.d/nxbender (mode 0440, root:root) via `visudo -f`.
+# Replace `mdrelas` with your username. Permits passwordless start/stop of the
+# VPN service so a one-click toggle works without a sudo prompt.
+mdrelas ALL=(root) NOPASSWD: /usr/bin/systemctl start nxbender.service, /usr/bin/systemctl stop nxbender.service, /usr/bin/systemctl restart nxbender.service

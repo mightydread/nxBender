@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Toggle the nxbender systemd service. Pair with /etc/sudoers.d/nxbender for
+# password-less start/stop, and with a .desktop file for a clickable shortcut.
+
+set -u
+
+UNIT=nxbender.service
+
+notify() {
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send -i "$1" "nxBender" "$2"
+    fi
+    echo "$2"
+}
+
+if systemctl is-active --quiet "$UNIT"; then
+    sudo systemctl stop "$UNIT"
+    notify network-vpn-disconnected "VPN disconnected"
+else
+    sudo systemctl start "$UNIT"
+    # Give pppd a moment to bring the link up before we report success.
+    sleep 3
+    if systemctl is-active --quiet "$UNIT"; then
+        notify network-vpn "VPN connected"
+    else
+        notify network-error "VPN failed to start (journalctl -u $UNIT)"
+        exit 1
+    fi
+fi

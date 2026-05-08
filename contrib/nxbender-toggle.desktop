@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Toggle nxBender VPN
+Comment=Connect or disconnect the SonicWall SSL VPN
+Exec=/usr/local/bin/nxbender-toggle
+Icon=network-vpn
+Terminal=false
+Categories=Network;
+StartupNotify=false
