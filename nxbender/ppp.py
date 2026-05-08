@@ -21,8 +21,8 @@ class PPPSession(object):
                 'dump',
                 'logfd', '2',   # we extract the remote IP thru this
 
-                'lcp-echo-interval', '10',
-                'lcp-echo-failure',  '2',
+                'lcp-echo-interval', '30',
+                'lcp-echo-failure',  '0',
 
                 'ktune',
                 'local',
