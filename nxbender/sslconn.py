@@ -14,7 +14,10 @@ class SSLConnection(object):
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         sock.connect((host, port))
 
-        self.s = ssl.wrap_socket(sock)
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        self.s = ctx.wrap_socket(sock, server_hostname=host)
 
         if getattr(options, 'fingerprint', False):
             if self.fingerprint != options.fingerprint.lower():
